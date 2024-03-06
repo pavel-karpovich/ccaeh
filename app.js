@@ -3511,12 +3511,24 @@ var integrationKey = urlParams.get('integrationKey') || 'test-adapter';
 loadCommWidgetApi().then(initializeIntegration);
 function loadCommWidgetApi() {
     return new Promise(function (resolve, reject) {
+      if (urlParams.get('legacy')) {
+        var iframeTag = document.createElement('iframe');
+        iframeTag.addEventListener('load', reject);
+        iframeTag.addEventListener('error', reject);
+        iframeTag.setAttribute('allow', 'microphone; camera; geolocation');
+        iframeTag.style.border = 'none';
+        iframeTag.style.width = '400px';
+        iframeTag.style.height = '100%';
+        iframeTag.src = 'https://surfly.bugfocus.com/agentdesktop/UniversalRepeater.jsp';
+        adcMountNode.appendChild(iframeTag);
+      } else {
         var scriptTag = document.createElement('script');
         scriptTag.addEventListener('load', resolve);
         scriptTag.addEventListener('error', reject);
         scriptTag.type = 'application/javascript';
         scriptTag.src = "https://" + brightpatternDomain + "/agent/communicator/adapters/api.js";
         document.head.appendChild(scriptTag);
+      }
     });
 }
 function initializeIntegration() {
